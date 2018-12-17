@@ -1,0 +1,85 @@
+###################################
+# CS B551 Fall 2018, Assignment #3
+#
+# Your names and user ids:
+#
+# (Based on skeleton code by D. Crandall)
+#
+#
+####
+# Put your report here!!
+####
+
+import random
+import math
+from data_loader import Trainer_builder
+from gibbs import GibbsSampler
+from hmm_solver import Viterbi
+from simple_solver import Simplified
+
+# We've set up a suggested code structure, but feel free to change it. Just
+# make sure your code still works with the label.py and pos_scorer.py code
+# that we've supplied.
+
+class Solver:
+    # Calculate the log of the posterior probability of a given sentence
+    #  with a given part-of-speech labeling. Right now just returns -999 -- fix this!
+
+    def __init__(self,train_file_name, test_file_name):
+        a =  GibbsSampler(Trainer_builder(train_file_name, test_file_name).get_trainer(), None).do_gibbs("The discovery struck Nick like a blow .".split())
+        self.train_file=train_file_name
+        self.test_file = test_file_name
+
+    def posterior(self, model, sentence, label):
+        if model == "Simple":
+            simple_instance = Simplified(sentence)
+            return simple_instance.calc_posterior(self.trainer_builder, label)
+        elif model == "Complex":
+            return -999
+        elif model == "HMM":
+            viterbi_instance = Viterbi(sentence)
+            return viterbi_instance.calc_posterior(self.trainer_builder,label)
+        else:
+            print("Unknown algo!")
+
+    # Do the training!
+    #
+    def train(self, data):
+<<<<<<< HEAD
+        pass
+=======
+        self.trainer_builder = Trainer_builder(self.train_file, self.test_file).get_trainer()
+
+>>>>>>> 4c4180cbf7defb7420f6ba50509cb7228c599040
+    # Functions for each algorithm. Right now this just returns nouns -- fix this!
+    #
+    def simplified(self, sentence):
+        simple_instance = Simplified(sentence)
+        return simple_instance.get_most_probable_tags(self.trainer_builder)
+
+    def complex_mcmc(self, sentence):
+        return [ "noun" ] * len(sentence)
+
+    def hmm_viterbi(self, sentence):
+        l
+        viterbi_instance= Viterbi(sentence)
+        self.hmm_tags= viterbi_instance.get_most_probable_tags(self.trainer_builder)[0]
+        self.hmm_prob= viterbi_instance.get_most_probable_tags(self.trainer_builder)[1]
+        return self.hmm_tags
+
+    # This solve() method is called by label.py, so you should keep the interface the
+    #  same, but you can change the code itself.
+    # It should return a list of part-of-speech labelings of the sentence, one
+    #  part of speech per word.
+    #
+    def solve(self, model, sentence):
+        if model == "Simple":
+            return self.simplified(sentence)
+        elif model == "Complex":
+            return self.complex_mcmc(sentence)
+        elif model == "HMM":
+            output= self.hmm_viterbi(sentence)
+            return output
+        else:
+            print("Unknown algo!")
+

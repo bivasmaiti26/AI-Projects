@@ -1,0 +1,66 @@
+<<<<<<< Updated upstream
+import json
+import re
+TRAINING_DATA = {'all_location_count' : 0, 'details' : {}}
+
+# builds the training data nto a DS that can be queried  efficiently.
+# use dump_trainer() to dump the Training data to a file called 'trainer' for debugging
+def build_trainer(fileName):
+    with open(fileName, "r") as f:
+        for line in f:
+            #regex to prevent new lie character appended at the end of the word
+            match = re.match(r'(.+)\n',line)
+            if match :
+                line = match.group(1)
+            line = line.strip()
+            tokens = line.split(" ")
+            location = tokens[0]
+            words = tokens[1:]
+            words_count = len(words)
+
+            # if the location is not present in the dictionary.
+            # takes O(1)
+            if  TRAINING_DATA['details'].get(location,False) == False:
+                TRAINING_DATA['all_location_count'] +=1
+                TRAINING_DATA['details'][location] = { 'words' : words, 'words_count' :words_count, 'location_count' : 1}
+
+            # else just update the dictionary with new  values.
+            else:
+                TRAINING_DATA['details'][location]['words']+=words
+                TRAINING_DATA['details'][location]['words_count'] +=words_count
+                TRAINING_DATA['details'][location]['location_count'] += 1
+
+
+def dump_trainer() :
+    with open('trainer', 'w') as file:
+        file.write(json.dumps(TRAINING_DATA,sort_keys=False, indent=4))
+
+build_trainer('tweets.train.clean.txt')
+dump_trainer()
+
+
+
+=======
+def build_word_map(fileName):
+    file = open(fileName, "r")
+    i=0
+    location_words = {}
+    for line in file:
+        i+=1
+        words=line.split(" ")
+        city=words[0]
+        words=words[1:]
+        if city not in location_words:
+            location_words.update({city:(1,len(words),words)})
+        else:
+            locwordspast=location_words[city]
+            for word in words:
+                locwordspast[2].append(word)
+            location_words.update({city:(locwordspast[0]+1,locwordspast[1]+len(words),locwordspast[2])})
+    return location_words
+
+word_map=build_word_map('tweets.train.clean.txt')
+
+
+#print word_map['San_Diego,_CA']
+>>>>>>> Stashed changes
