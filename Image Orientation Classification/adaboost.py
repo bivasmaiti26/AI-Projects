@@ -16,12 +16,15 @@ class AdaBoost:
             self.normalize_weights()
             self.subset_size = int(0.67 * len(self.train))
 
+    # pick 2 random pixel values
     def pick_random_dimensions(self):
         return tuple(np.random.randint(0, high = 192, size = 2))
 
+    # pick 2/3 of data based on distribution of weights
     def pick_random_subset(self):
         return np.random.choice(self.train, size = self.subset_size, p=map(lambda item: item['weight'], self.train))
 
+    # if accuracy of a classifier is greater than a threshold, take it else discard it
     def is_classifier_good(self, classifier, orientation):
         error = 0
         train_set = self.pick_random_subset()
@@ -34,11 +37,15 @@ class AdaBoost:
             return True
         return False
 
+    # normalizing weights so that sum of these weights = 1
     def normalize_weights(self):
         sum_weights = float(sum([data_point['weight'] for data_point in self.train]))
         for data_point in self.train:
             data_point['weight'] /= sum_weights
-    
+
+    # calculate trust factor of a stump based on error.
+    # error is calculated as sum of weights of misclassified data.
+    # update the weights after doing these.
     def train_classifier(self, classifier, orientation):
         error = 0
         for train_point in self.train:
@@ -66,6 +73,9 @@ class AdaBoost:
                 self.train_classifier(classifier, o)
                 self.classifiers['classifiers'][str(o)].append(classifier)
 
+    # create good classifiers (accuracy > 69%).
+    # if ehausted the number of attempts, then spit out 200
+    # classifiers of any accuracy.
     def create_classifiers(self, orientation):
         n_classifiers = 0
         classifiers = []
@@ -83,6 +93,7 @@ class AdaBoost:
                 return junk_classifiers[0 : self.classifiers['n_stumps']]
         return classifiers
 
+    # load a trained model from file
     def load_model(self, file):
         with open(file, 'r') as file:
             self.classifiers = pickle.load(file)
@@ -113,10 +124,12 @@ class AdaBoost:
         self.write_output_to_file(output_file, output)
         return output
 
+    # create an output file of labelled images
     def write_output_to_file(self, output_file, output):
         with open(output_file, 'w') as file:
             file.write("\n".join(map(lambda item: " ".join(map(lambda it:str(it), item)),output['contents'])))
 
+    # write model to file
     def write_model(self, file):
         with open(file, 'w') as file:
             pickle.dump(self.classifiers, file)

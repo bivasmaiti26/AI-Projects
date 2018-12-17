@@ -69,7 +69,7 @@ class Forest:
             for branch in pred_branches:
                 num_branch = 0.0
                 for i in range(data_points_num):
-                    #if less than mean, branch-true, else false 
+                    #if less than mean, branch-true, else false
                     num_branch += 1 if (data_points[i]['pixels'][pred] < self.threshold )== branch else 0
                 #print num_branch,data_points_num
 
@@ -108,10 +108,8 @@ class Forest:
             if label==image['gt_orient']:
                 correct+=1
             output['content'].append((image['id'], label))
-            print image['id'],label,image['gt_orient']
         output['accuracy'] =  float(correct)/float(images) * 100
         self.write_output_to_file(output_file, output)
-
         return output
 
     def predict_orient(self,image,tree):

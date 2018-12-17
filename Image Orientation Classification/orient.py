@@ -14,7 +14,7 @@ class Orient:
         self.model_file = model_file
         self.model = model
         self.train_test_file = train_test_file
-        self.output_file = 'output.txt'
+        self.output_file = 'adaboost_output.txt' if model == 'adaboost' else 'knn_output.txt' if model == 'nearest' else 'forest_output.txt' if model == 'forest' else 'best_output.txt'
 
     def load_data(self):
         data_loader_instance = DataLoader(self.train_test_file, self.flag)
